@@ -1,0 +1,80 @@
+﻿@model IEnumerable<BaiTh.Models.Product>
+
+@{
+    ViewData["Title"] = "Index";
+    int numOfQuantity = 1;
+}
+<style>
+    body {
+        background-image: url("https://png.pngtree.com/thumb_back/fh260/background/20210120/pngtree-green-simple-clean-background-image_536886.jpg");
+    }
+</style>
+
+<style>
+    .price {
+        color: red;
+    }
+</style>
+
+<div class="row">
+    <div class="col-lg-3">
+        <div class="list-group" id="categoryList">
+            <a href="#" class="list-group-item list-group-item-action category-item" data-category="">Tất cả sản phẩm</a>
+            @foreach (var category in Model.Select(p => p.Category.Name).Distinct())
+            {
+                <a href="#" class="list-group-item list-group-item-action category-item" data-category="@category">Tìm theo loại: @category</a>
+            }
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <h4 class="text-center">Tất cả sản phẩm</h4>
+    </div>
+
+</div>
+
+<div class="row mt-3" id="productList">
+    @foreach (var item in Model)
+    {
+        <div class="col-lg-4 col-md-6 mb-4 category-item" data-category="@item.Category.Name">
+            <div class="card h-100">
+                <img class="card-img-top" src="@item.ImageUrl" alt="@item.Name">
+                <div class="card-body">
+                    <h4 class="card-title">@item.Name</h4>
+                    <h5 class="price">@item.Price $</h5>
+                    <form asp-controller="ShoppingCart" asp-action="AddToCart" method="post">
+                        <input type="hidden" name="productId" value="@item.Id" />
+                        <div class="input-group mb-3">
+                            <input type="number" class="form-control" name="quantity" value="1" min="1">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-dark"><i class="bi-cart-fill me-1"></i> Thêm vào giỏ hàng
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <small class="text-muted">@item.Category.Name</small>
+                    <a asp-action="Display" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info ml-2">Chi tiết</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $(".category-item").on("click", function () {
+                var category = $(this).data("category");
+                $(".category-item").removeClass("active");
+                $(this).addClass("active");
+                if (category === "") {
+                    $("#productList .category-item").show();
+                } else {
+                    $("#productList .category-item").hide();
+                    $("#productList .category-item[data-category='" + category + "']").show();
+                }
+            });
+        });
+    </script>
+}
